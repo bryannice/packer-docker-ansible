@@ -41,12 +41,15 @@ GIT_VERSION_LONG := $(shell git describe --always --tags --long --dirty)
 # -----------------------------------------------------------------------------
 
 .EXPORT_ALL_VARIABLES:
-ANSIBLE_VERSION ?= 2.10.5
-ANSIBLE_PLAYBOOK_CODE_VERSION ?= master
-PKR_VAR_image_description ?= "Packer Build"
-PKR_VAR_image_name ?= test-build
-PKR_VAR_image_version ?= 1.0.0
-PKR_VAR_os_name ?= centos7-8
+PKR_VAR_ansible_playbook_path ?= $(ANSIBLE_PLAYBOOK_PATH)
+PKR_VAR_base_container_image ?= $(BASE_CONTAINER_IMAGE)
+PKR_VAR_container_entrypoint ?= $(CONTAINER_ENTRYPOINT)
+PKR_VAR_container_image_repository ?= $(CONTAINER_IMAGE_REPOSITORY)
+PKR_VAR_container_image_tag ?= $(CONTAINER_IMAGE_TAG)
+PKR_VAR_container_registry_password ?= $(CONTAINER_REGISTRY_PASSWORD)
+PKR_VAR_container_registry_server ?= $(CONTAINER_REGISTRY_SERVER)
+PKR_VAR_container_registry_username ?= $(CONTAINER_REGISTRY_USERNAME)
+PKR_VAR_container_working_directory ?= $(CONTAINER_WORKING_DIRECTORY)
 
 # -----------------------------------------------------------------------------
 # FUNCTIONS

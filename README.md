@@ -8,106 +8,55 @@ This repo uses HCL instead of JSON templates to manage the packer build process.
 
 These are the environment variables to set before executing the Packer process. Some variables are required for specific builders and there are columns indicating which ones.
 
-| Variable                            | Required   | Default Value               | Builder: ephemeral-ansible-agent | Builder: local-ansible-agent | Builder: local-ansible-agent-for-docker | AWS | Azure | VirtualBox | VMWare | Docker | Description                                                                                                                  |
-| ----------------------------------- | ---------- | --------------------------- | -------------------------------- | ---------------------------- | --------------------------------------- | --- | ----- | ---------- | ------ | ------ | ---------------------------------------------------------------------------------------------------------------------------- |
-| PKR_VAR_ansible_playbook_path       | Y          |                             |                                  | X                            | X                                       | X   | X     | X          | X      | X      | Ansible playbook path.                                                                                                       |
-| PKR_VAR_aws_ami_regions             | Y          |                             | X                                | X                            | X                                       | X   |       |            |        |        | Region to store the AMI.                                                                                                     |
-| PKR_VAR_container_registry_password | Y          |                             |                                  |                              | X                                       |     |       |            |        | X      | Container registry password.                                                                                                 |
-| PKR_VAR_container_registry_server   | Y          |                             |                                  |                              | X                                       |     |       |            |        | X      | Container registry server url.                                                                                               |
-| PKR_VAR_container_registry_username | Y          |                             |                                  |                              | X                                       |     |       |            |        | X      | Container registry username.                                                                                                 |
-| PKR_VAR_container_repository        | Y          | https://index.docker.io/v1/ |                                  |                              | X                                       |     |       |            |        | X      | Docker repository to push built image to.                                                                                    |
-| PKR_VAR_az_resource_group_name      | Y          | packer-build-rg             | X                                | X                            | X                                       |     | X     |            |        |        | Resource group to store the image.                                                                                           |
-| PKR_VAR_az_subscription_id          | Y          |                             | X                                | X                            | X                                       |     | X     |            |        |        | Azure subscription ID.                                                                                                       |
-| PKR_VAR_az_tenant_id                | N          |                             | X                                | X                            | X                                       |     | X     |            |        |        | Azure tenant ID.                                                                                                             |
-| PKR_VAR_client_id                   | N          |                             | X                                | X                            | X                                       | X   | X     |            |        |        | Access key for AWS and client id for Azure.                                                                                  |
-| PKR_VAR_client_secret               | N          |                             | X                                | X                            | X                                       | X   | X     |            |        |        | Secret key for AWS and client secret for Azure.                                                                              |
-| PKR_VAR_docker_environment_variable | N          |                             | X                                | X                            |                                         | X   | X     | X          | X      |        | Environment variable used by docker. Format is '--env COOL_VAR1=VALUE1 --env COOL_VAR2=VALUE2'                               |
-| PKR_VAR_docker_image_name           | Y          |                             | X                                | X                            |                                         | X   | X     | X          | X      |        | Docker image with the Ansible runtime environment.                                                                           |
-| PKR_VAR_docker_mounted_volume       | N          |                             | X                                | X                            |                                         | X   | X     | X          | X      |        | Mount volumes needed to support the Ansible playbook process.                                                                |
-| PKR_VAR_git_code_version            | Y          | master                      | X                                | X                            | X                                       | X   | X     | X          | X      |        | Code version to use (branch or tag).                                                                                         |
-| PKR_VAR_git_url                     | Y          |                             | X                                | X                            | X                                       | X   | X     | X          | X      |        | Git repo URL.                                                                                                                |
-| PKR_VAR_image_cpus                  | Y          | 4                           | X                                | X                            | X                                       |     |       | X          | X      |        | Image CPUs setting.                                                                                                          |
-| PKR_VAR_image_disk_size             | Y          |                             | X                                | X                            | X                                       | X   | X     | X          | X      |        | Image disk size. VMWare and VirtualBox this is number value representing MB. Azure this is a number value representing GB.   |
-| PKR_VAR_image_description           | N          | Image Built By Packer       | X                                | X                            | X                                       | X   | X     | X          | X      |        | Image description.                                                                                                           | 
-| PKR_VAR_image_memory                | Y          | 10240                       | X                                | X                            | X                                       |     |       | X          | X      |        | Image memory settings and the number value is in MB.                                                                         |
-| PKR_VAR_image_name                  | Y          | packer                      | X                                | X                            | X                                       | X   | X     | X          | X      |        | Image name.                                                                                                                  |
-| PKR_VAR_image_version               | Y          | 0.0.0                       | X                                | X                            | X                                       | X   | X     | X          | X      |        | Image semantic version built.                                                                                                |
-| PKR_VAR_instance_type               | Y          | Standard_D4a_v4             | X                                | X                            | X                                       | X   | X     |            |        |        | The instance type for AWS and the VM Size for Azure. (Default is for Azure)                                                  |
-| PKR_VAR_os_name                     | Y          | centos7-8                   | X                                | X                            | X                                       | X   | X     | X          | X      |        | The OS name the packer build process create image from. Acceptable values centos7-8, centos8-2, debian9-13, and debian10-05. |
-| PKR_VAR_region                      | Y          | westus2                     | X                                | X                            | X                                       |     | X     |            |        |        | The region for AWS and the location for Azure.                                                                               |
-| PKR_VAR_ssh_password                | Y          | vagrant                     | X                                | X                            | X                                       |     |       | X          | X      |        | Password to use.                                                                                                             |
-| PKR_VAR_ssh_username                | Y          | vagrant                     | X                                | X                            | X                                       |     |       | X          | X      |        | Username to use.                                                                                                             |
+| Variable                            | Required   | Default Value               | Description                                                   |
+| ----------------------------------- | ---------- | --------------------------- | ------------------------------------------------------------- |
+| ANSIBLE_PLAYBOOK_PATH               | Y          |                             | Ansible playbook path.                                        |
+| BASE_CONTAINER_IMAGE                | Y          |                             | The base image for the Docker container that will be started. |
+| CONTAINER_ENTRYPOINT                | N          |                             | Entrypoint to set for the container image.                    |
+| CONTAINER_IMAGE_REPOSITORY          | Y          |                             | Container repository to push built image to.                  |
+| CONTAINER_IMAGE_TAG                 | Y          |                             | Tag for the image.                                            |
+| CONTAINER_REGISTRY_PASSWORD         | Y          |                             | Container registry password.                                  |
+| CONTAINER_REGISTRY_SERVER           | Y          | https://index.docker.io/v1/ | Container registry server url.                                |
+| CONTAINER_REGISTRY_USERNAME         | Y          |                             | Container registry username.                                  |
+| CONTAINER_WORKING_DIRECTORY         | N          |                             | Working directory to set for the container image.             |
 
 ## Make Targets
 
 Make file is used to manage the commands used for building images using packer. The goal of make targets is to simplify the automation commands used.
 
-### `make azure-arm`
+### `make docker-ansible`
 
-This make target builds Azure machine images and below are an example set of commands to execute.
+This make target builds container images.
 
-```console
-$ export PKR_VAR_az_subscription_id=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-$ export PKR_VAR_git_code_version=1.0.0
-$ export PKR_VAR_git_url=https://github.com/bryannice/ansible-playbook-denodo-solution-manager.git
-$ export PKR_VAR_image_description="Packer Build Image"
-$ export PKR_VAR_image_disk_size=100
-$ export PKR_VAR_image_name=packer-build-image
-$ export PKR_VAR_image_version=1.0.0
-$ export PKR_VAR_os_name=centos7-8
-$ export PKR_VAR_region="westus2"
-$ export PKR_VAR_working_directory=/workspace
-$ make azure-arm
-```
-
-### `make amazon-ebs`
-
-This make target builds Amazon machine images and below are an example set of commands to execute.
+#### Setting environment variables:
 
 ```bash
-$ export PKR_VAR_client_id=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-$ export PKR_VAR_client_secret=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-$ export PKR_VAR_git_code_version=1.0.0
-$ export PKR_VAR_git_url=https://github.com/bryannice/ansible-playbook-denodo-solution-manager.git
-$ export PKR_VAR_image_description="Packer Build Image"
-$ export PKR_VAR_image_name=packer-build-image
-$ export PKR_VAR_image_version=1.0.0
-$ export PKR_VAR_os_name=centos7-8
-$ export PKR_VAR_region="us-east-1"
-$ export PKR_VAR_working_directory=/workspace
-$ make amazon-ebs
+$ export ANSIBLE_PLAYBOOK_PATH=somedir
+$ export BASE_CONTAINER_IMAGE=python:3.9.1-buster
+$ export CONTAINER_ENTRYPOINT="ENTRYPOINT /entrypoint/init"
+$ export CONTAINER_IMAGE_REPOSITORY=someproject/someRepo
+$ export CONTAINER_IMAGE_TAG=debian10.7-1.0.0
+$ export CONTAINER_REGISTRY_PASSWORD=somePassword
+$ export CONTAINER_REGISTRY_SERVER=https://index.docker.io/v1/
+$ export CONTAINER_REGISTRY_USERNAME=someUserName
+$ export CONTAINER_WORKING_DIRECTORY="WORKDIR /entrypoint"
+$ make docker-ansible
 ```
 
-### `make virtualbox-iso`
-
-This make target builds VirtualBox machine images using an ISO and below are an example set of commands to execute.
+#### Setting variables at command line:
 
 ```bash
-$ export PKR_VAR_git_code_version=1.0.0
-$ export PKR_VAR_git_url=https://github.com/bryannice/ansible-playbook-denodo-solution-manager.git
-$ export PKR_VAR_image_description="Packer Build Image"
-$ export PKR_VAR_image_disk_size=1024000
-$ export PKR_VAR_image_name=packer-build-image
-$ export PKR_VAR_image_version=1.0.0
-$ export PKR_VAR_os_name=centos7-8
-$ export PKR_VAR_working_directory=/workspace
-make virtualbox-iso
-```
-
-### `make vmware-iso`
-
-This make target builds VMWare machine images using an ISO and below are an example set of commands to execute.
-
-```bash
-$ export PKR_VAR_git_code_version=1.0.0
-$ export PKR_VAR_git_url=https://github.com/bryannice/ansible-playbook-denodo-solution-manager.git
-$ export PKR_VAR_image_description="Packer Build Image"
-$ export PKR_VAR_image_disk_size=1024000
-$ export PKR_VAR_image_name=packer-build-image
-$ export PKR_VAR_image_version=1.0.0
-$ export PKR_VAR_os_name=centos7-8
-$ export PKR_VAR_working_directory=/workspace
-make vmware-iso
+$ make \
+  PKR_VAR_ansible_playbook_path=somedir \
+  PKR_VAR_base_container_image=python:3.9.1-buster \
+  PKR_VAR_container_entrypoint="ENTRYPOINT /entrypoint/init" \
+  PKR_VAR_container_image_repository=someproject/someRepo \
+  PKR_VAR_container_image_tag=debian10.7-1.0.0 \
+  PKR_VAR_container_registry_password=somePassword \
+  PKR_VAR_container_registry_server=https://index.docker.io/v1/ \
+  PKR_VAR_container_registry_username=someUserName \
+  PKR_VAR_container_working_directory="WORKDIR /entrypoint" \
+  docker-ansible
 ```
 
 ### `make clean`

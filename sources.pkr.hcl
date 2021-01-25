@@ -1,7 +1,8 @@
 source "docker" "ansible" {
+  changes = local.changes
   commit = true
   discard = false
-  image = lookup(lookup(local.os_list, var.os_name,{}), "docker_image", "")
+  image = var.base_container_image
   login = true
   login_server = var.container_registry_server
   login_username = var.container_registry_username

@@ -14,10 +14,7 @@ build {
       force = true
       keep_input_artifact = true
       repository = var.container_repository
-      tag = [
-        "latest",
-        format("%s-%s",var.os_name,var.git_code_version),
-      ]
+      tag = local.tag
     }
 
     post-processor "docker-push" {
