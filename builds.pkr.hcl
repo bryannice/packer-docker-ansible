@@ -1,6 +1,4 @@
 build {
-  name = "docker-ansible"
-
   sources = [
     "source.docker.ansible",
   ]
@@ -13,7 +11,7 @@ build {
     post-processor "docker-tag" {
       force = true
       keep_input_artifact = true
-      repository = var.container_repository
+      repository = var.container_image_repository
       tag = local.tag
     }
 

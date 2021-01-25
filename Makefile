@@ -74,7 +74,7 @@ help:
 
 .PHONY: docker-ansible
 docker-ansible:
-	packer build -only=docker-ansible .
+	packer build -only=docker.ansible .
 
 # -----------------------------------------------------------------------------
 # Clean up targets.
